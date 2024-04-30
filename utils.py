@@ -21,6 +21,39 @@ def check_columns(file_path, required_columns):
     required_columns = [column.lower().replace("_", " ") for column in required_columns]
     if set(required_columns).issubset(df.columns):
         return file_path
+    
+def get_perm_data_path(file_paths, required_columns):
+    """Get the file paths that contain the required columns.
+    :param file_paths: A list of file paths to check.
+    :param required_columns: A list of required columns."""
+    qualified_files = []
+    for file in file_paths:
+        qualified_file = check_columns(file, required_columns)
+        if qualified_file:
+            qualified_files.extend(qualified_file) # To avoid nested list
+    print(sorted(qualified_files))
+    return sorted(qualified_files)
+
+def read_perm_data(qualified_files, required_columns, new_columns = {}):
+    """Read the PERM data from the qualified files.
+    :param qualified_files: A list of qualified file paths.
+    :param required_columns: A list of required columns.
+    :param new_columns: A dictionary of new column names."""
+    df_perm = pd.DataFrame()
+    for file in qualified_files:
+        try:
+            df = pd.read_csv(file)
+            df.columns = [column.lower().replace("_", " ") for column in df.columns] # Convert actual columns to lower case
+            required_columns = [column.lower().replace("_", " ") for column in required_columns]  # Convert required columns to lower case
+            df = df[required_columns]
+            df["Year"] = file.split("_")[-1].split(".")[0]  # Extract the year from the file name
+            if new_columns:
+                df = df.rename(columns= new_columns)
+            df_perm = pd.concat([df_perm, df], axis=0)
+        except ValueError:
+            # Handle the exception
+            print(f"ValueError occurred while processing file: {file}")
+    return df_perm
 
 # Data visualization tools
 def plot_immigration_over_time(data, regions, mutiple=True):
