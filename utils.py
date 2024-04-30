@@ -101,3 +101,36 @@ def plot_percentage_pie(data, regions, type):
 
     # Display the plot
     plt.show()
+
+def plot_stacked_bar(df, title, xlabel, ylabel):
+    """ Plot a stacked bar plot for the given data frame.
+    :param df: The data frame to plot.
+    :param title: The title of the figure.
+    :param xlabel: The label for the x-axis.
+    :param ylabel: The label for the y-axis.
+    """
+    # Set the figure size
+    plt.figure(figsize=(10, 6))
+
+    # Create a cross table
+    cross_tab = pd.crosstab(index=df[xlabel], columns=df[ylabel])
+
+    # Calculate the percentage for each group in each year
+    percentage_tab = cross_tab.div(cross_tab.sum(axis=1), axis=0) * 100
+
+    # Create a stacked bar plot for the percentages
+    ax = percentage_tab.plot(kind='bar', stacked=True)
+
+    # Add percentages on the figure
+    for i, (idx, row) in enumerate(percentage_tab.iterrows()):
+        for j, item in enumerate(row):
+            if item > 0:
+                ax.text(i, row.iloc[:j+1].sum() - item / 2, f'{item:.1f}%', ha='center', va='center')
+
+    # Set the title and labels
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+
+    # Show the figure
+    plt.show()
