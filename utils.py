@@ -1,5 +1,16 @@
 import matplotlib.pyplot as plt
 
+# Data process tools
+def check_columns(file_path, required_columns):
+    qualified_files = []
+    df = pd.read_csv(file_path)
+    if set(required_columns).issubset(df.columns):
+        file_id = file_path.split("/")[-1]
+        qualified_files.append(file_id)
+        print(qualified_files)
+        return qualified_files
+
+# Data visualization tools
 def plot_immigration_over_time(data, regions, mutiple=True):
 
     plt.figure(figsize=(10, 6))
