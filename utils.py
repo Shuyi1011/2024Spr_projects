@@ -1,16 +1,24 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
+import re
 
 # Data process tools
 def get_all_file_paths(directory):
+    """Get all file paths in a directory.
+    :param directory: The directory to search for files."""
     all_files = os.listdir(directory)
     all_csv_files = [file for file in all_files if file.endswith(".csv")]
     all_csv_file_paths = [os.path.join(directory, file) for file in all_csv_files]
     return all_csv_file_paths
 
 def check_columns(file_path, required_columns):
+    """Check if a file contains the required columns.
+    :param file_path: The file path to check.
+    :param required_columns: A list of required columns."""
     df = pd.read_csv(file_path, nrows=1)
+    df.columns = [column.lower().replace("_", " ") for column in df.columns]
+    required_columns = [column.lower().replace("_", " ") for column in required_columns]
     if set(required_columns).issubset(df.columns):
         return file_path
 
