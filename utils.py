@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 import re
+from sklearn.cluster import KMeans
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Data process tools
 def get_all_file_paths(directory):
@@ -58,7 +60,7 @@ def read_perm_data(qualified_files, required_columns, new_columns = {}):
 # Data visualization tools
 def plot_immigration_over_time(data, regions, mutiple=True):
 
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(12, 8))
     if mutiple:
         for region in regions:
             plt.plot(data.columns.astype(str), data.loc[region], label=region)
@@ -132,5 +134,19 @@ def plot_stacked_bar(df, title, xlabel, ylabel):
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
 
+    # Move the legend outside of the plot
+    ax.legend(loc='upper left', bbox_to_anchor=(1.0, 1.0))
+
     # Show the figure
     plt.show()
+
+def vectorize_TFIDF_cluster(data, n_clusters=16):
+    # TF-IDF
+    # it assigns a weight to each word that signifies the word's importance in the text. 
+    # Words that are common across all documents have lower weights, while words that are rare have higher weights.
+    vectorizer = TfidfVectorizer()
+    X = vectorizer.fit_transform(data)
+    kmeans = KMeans(n_clusters=n_clusters)
+    kmeans.fit(X)
+    labels = kmeans.labels_
+    return labels
