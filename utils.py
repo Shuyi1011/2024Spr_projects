@@ -178,3 +178,7 @@ def plot_map(df, region):
     plt.title(f"Immigrants from {region} in the US by State (2013-2022)")
 
     plt.show()
+
+def receiving_states_job_title(df, state_short, state, regions, title):
+    df[((df["worksite state"] == state_short) | (df["worksite state"] == state)) & (df["birth country"].isin(regions))].groupby("job title").size().sort_values(ascending=False).head(10).plot(kind="barh", title=f"Top 10 Job Titles for {title} Immigrants in {state}")
+    plt.show()
