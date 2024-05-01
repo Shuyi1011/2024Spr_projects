@@ -4,6 +4,7 @@ import os
 import re
 from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
+import geopandas as gpd
 
 # Data process tools
 def get_all_file_paths(directory):
@@ -150,3 +151,30 @@ def vectorize_TFIDF_cluster(data, n_clusters=16):
     kmeans.fit(X)
     labels = kmeans.labels_
     return labels
+
+def plot_map(df, region):
+    """ Plot the map of the US with the color representing the number"""
+    df_receiving_states = df.set_index('Region and country of birth')
+
+    us_states = gpd.read_file('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json')
+
+    # convert df to geodf
+    us_states = us_states.set_index('name')
+    df_receiving_states = df_receiving_states.transpose()
+    us_states = us_states.join(df_receiving_states)
+
+    # plot the map
+    fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+    us_states.plot(column=region, ax=ax, legend=True, missing_kwds={"color": "lightgrey"}, legend_kwds={'shrink': 0.5})
+
+    # put names on the map
+    us_states['center'] = us_states['geometry'].centroid
+    us_states_points = us_states.copy()
+    us_states_points.set_geometry('center', inplace = True)
+
+    for x, y, label in zip(us_states_points.geometry.x, us_states_points.geometry.y, us_states_points.index):
+        ax.text(x, y, label, fontsize=7)
+
+    plt.title(f"Immigrants from {region} in the US by State (2013-2022)")
+
+    plt.show()
