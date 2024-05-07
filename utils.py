@@ -60,6 +60,10 @@ def read_perm_data(qualified_files, required_columns, new_columns = {}):
 
 # Data visualization tools
 def plot_immigration_over_time(data, regions, mutiple=True):
+    """ Plot the immigration number over time for the given regions.
+    :param data: The data frame of immigration numbers.
+    :param regions: The list of regions to plot.
+    :param mutiple: A boolean flag to indicate whether to plot multiple regions. Default is True."""
 
     plt.figure(figsize=(12, 8))
     if mutiple:
@@ -81,6 +85,9 @@ def plot_immigration_over_time(data, regions, mutiple=True):
 
 
 def plot_states_bar(data, regions):
+    """ Plot the number of immigrants for the given regions.
+    :param data: The data of immigration numbers.
+    :param regions: The list of regions to plot."""
     df = data.loc[regions].drop('Total').sort_values()
 
     # Create a bar chart
@@ -92,17 +99,18 @@ def plot_states_bar(data, regions):
     plt.ylabel('States')
 
 def plot_percentage_pie(data, regions, type):
+    """ Plot the percentage of the given green card type for the given regions.
+    :param data: The data frame of the green card types.
+    :param regions: The list of regions to plot.
+    :param type: The type of green card.
+    """
     df = data[type]
     df = df.loc[regions]
 
-    # Create a pie chart
     plt.figure(figsize=(10, 6))
     plt.pie(df, labels=df.index, autopct='%1.1f%%')
-
-    # Optionally, you can add a title
     plt.title(type)
 
-    # Display the plot
     plt.show()
 
 def plot_stacked_bar(df, title, xlabel, ylabel):
@@ -142,6 +150,9 @@ def plot_stacked_bar(df, title, xlabel, ylabel):
     plt.show()
 
 def vectorize_TFIDF_cluster(data, n_clusters=16):
+    """Vectorize the text data using TF-IDF and cluster the data using KMeans.
+    :param data: The text data to vectorize.
+    :param n_clusters: The number of clusters to use in KMeans. Default is 16."""
     # TF-IDF
     # it assigns a weight to each word that signifies the word's importance in the text. 
     # Words that are common across all documents have lower weights, while words that are rare have higher weights.
@@ -153,7 +164,9 @@ def vectorize_TFIDF_cluster(data, n_clusters=16):
     return labels
 
 def plot_map(df, region):
-    """ Plot the map of the US with the color representing the number"""
+    """ Plot the map of the US with the color representing the number
+    :param df: The data frame of the number
+    :param region: The region to plot."""
     df_receiving_states = df.set_index('Region and country of birth')
 
     us_states = gpd.read_file('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json')
@@ -180,5 +193,11 @@ def plot_map(df, region):
     plt.show()
 
 def receiving_states_job_title(df, state_short, state, regions, title):
+    """ Plot the top 10 job titles for the given birth place in the given state.
+    :param df: The data frame of the job titles.
+    :param state_short: The short name of the state.
+    :param state: The full name of the state.
+    :param regions: The list of regions to plot.
+    :param title: The title of the plot."""
     df[((df["worksite state"] == state_short) | (df["worksite state"] == state)) & (df["birth country"].isin(regions))].groupby("job title").size().sort_values(ascending=False).head(10).plot(kind="barh", title=f"Top 10 Job Titles for {title} Immigrants in {state}")
     plt.show()
