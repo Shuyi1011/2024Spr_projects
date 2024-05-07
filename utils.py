@@ -5,11 +5,14 @@ import re
 from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 import geopandas as gpd
+import doctest
 
 # Data process tools
 def get_all_file_paths(directory):
-    """Get all file paths in a directory.
-    :param directory: The directory to search for files."""
+    """Get all csv file paths in a directory.
+    :param directory: The directory to search for files.
+    >>> get_all_file_paths("data")
+    ['data/random_data_1.csv', 'data/random_data_2.csv']"""
     all_files = os.listdir(directory)
     all_csv_files = [file for file in all_files if file.endswith(".csv")]
     all_csv_file_paths = [os.path.join(directory, file) for file in all_csv_files]
@@ -18,7 +21,12 @@ def get_all_file_paths(directory):
 def check_columns(file_path, required_columns):
     """Check if a file contains the required columns.
     :param file_path: The file path to check.
-    :param required_columns: A list of required columns."""
+    :param required_columns: A list of required columns.
+    >>> check_columns("data/random_data_1.csv", ["A", "B"])
+    'data/random_data_1.csv'
+    >>> check_columns("data/random_data_2.csv", ["D", "E"])
+    'data/random_data_2.csv'
+    """
     df = pd.read_csv(file_path, nrows=1)
     df.columns = [column.lower().replace("_", " ") for column in df.columns]
     required_columns = [column.lower().replace("_", " ") for column in required_columns]
@@ -28,20 +36,26 @@ def check_columns(file_path, required_columns):
 def get_perm_data_path(file_paths, required_columns):
     """Get the file paths that contain the required columns.
     :param file_paths: A list of file paths to check.
-    :param required_columns: A list of required columns."""
+    :param required_columns: A list of required columns.
+    >>> file_path = get_all_file_paths("data")
+    >>> get_perm_data_path(file_path, "A")
+    ['data/random_data_1.csv', 'data/random_data_2.csv']
+    >>> get_perm_data_path(file_path, ["A", "B"])
+    ['data/random_data_1.csv']"""
     qualified_files = []
     for file in file_paths:
         qualified_file = check_columns(file, required_columns)
         if qualified_file:
-            qualified_files.extend(qualified_file) # To avoid nested list
-    print(sorted(qualified_files))
+            qualified_files.append(qualified_file)
+    # print(sorted(qualified_files))
     return sorted(qualified_files)
 
 def read_perm_data(qualified_files, required_columns, new_columns = {}):
     """Read the PERM data from the qualified files.
     :param qualified_files: A list of qualified file paths.
     :param required_columns: A list of required columns.
-    :param new_columns: A dictionary of new column names."""
+    :param new_columns: A dictionary of new column names.
+    """
     df_perm = pd.DataFrame()
     for file in qualified_files:
         try:
@@ -63,7 +77,15 @@ def plot_immigration_over_time(data, regions, mutiple=True):
     """ Plot the immigration number over time for the given regions.
     :param data: The data frame of immigration numbers.
     :param regions: The list of regions to plot.
-    :param mutiple: A boolean flag to indicate whether to plot multiple regions. Default is True."""
+    :param mutiple: A boolean flag to indicate whether to plot multiple regions. Default is True.
+    >>> import pandas as pd
+    >>> data = pd.DataFrame({
+    ...     "2000": [100, 200, 300],
+    ...     "2010": [150, 250, 350],
+    ...     "2020": [200, 300, 400]
+    ... }, index=["Region1", "Region2", "Region3"])
+    >>> plot_immigration_over_time(data, ["Region1", "Region2"])
+    """
 
     plt.figure(figsize=(12, 8))
     if mutiple:
@@ -87,7 +109,8 @@ def plot_immigration_over_time(data, regions, mutiple=True):
 def plot_states_bar(data, regions):
     """ Plot the number of immigrants for the given regions.
     :param data: The data of immigration numbers.
-    :param regions: The list of regions to plot."""
+    :param regions: The list of regions to plot.
+    """
     df = data.loc[regions].drop('Total').sort_values()
 
     # Create a bar chart
@@ -103,6 +126,13 @@ def plot_percentage_pie(data, regions, type):
     :param data: The data frame of the green card types.
     :param regions: The list of regions to plot.
     :param type: The type of green card.
+    >>> import pandas as pd
+    >>> data = pd.DataFrame({
+    ...     "Type1": [100, 200, 300],
+    ...     "Type2": [150, 250, 350],
+    ...     "Type3": [200, 300, 400]
+    ... }, index=["Region1", "Region2", "Region3"])
+    >>> plot_percentage_pie(data, ["Region1", "Region2"], "Type1")
     """
     df = data[type]
     df = df.loc[regions]
@@ -119,6 +149,13 @@ def plot_stacked_bar(df, title, xlabel, ylabel):
     :param title: The title of the figure.
     :param xlabel: The label for the x-axis.
     :param ylabel: The label for the y-axis.
+    >>> import pandas as pd
+    >>> df = pd.DataFrame({
+    ...     "Year": [2000, 2000, 2010, 2010, 2020, 2020],
+    ...     "Type": ["Type1", "Type2", "Type1", "Type2", "Type1", "Type2"],
+    ...     "Count": [100, 200, 150, 250, 200, 300]
+    ... })
+    >>> plot_stacked_bar(df, "Title", "Year", "Type")
     """
     # Set the figure size
     plt.figure(figsize=(10, 6))
@@ -152,7 +189,12 @@ def plot_stacked_bar(df, title, xlabel, ylabel):
 def vectorize_TFIDF_cluster(data, n_clusters=16):
     """Vectorize the text data using TF-IDF and cluster the data using KMeans.
     :param data: The text data to vectorize.
-    :param n_clusters: The number of clusters to use in KMeans. Default is 16."""
+    :param n_clusters: The number of clusters to use in KMeans. Default is 16.
+    >>> result = vectorize_TFIDF_cluster(["This is a test", "This is another test"], 2)
+    >>> sorted_result = sorted(result)
+    >>> sorted_result
+    [0, 1]
+    """
     # TF-IDF
     # it assigns a weight to each word that signifies the word's importance in the text. 
     # Words that are common across all documents have lower weights, while words that are rare have higher weights.
@@ -166,7 +208,14 @@ def vectorize_TFIDF_cluster(data, n_clusters=16):
 def plot_map(df, region):
     """ Plot the map of the US with the color representing the number
     :param df: The data frame of the number
-    :param region: The region to plot."""
+    :param region: The region to plot.
+    >>> import pandas as pd
+    >>> df = pd.DataFrame({
+    ...     "Region and country of birth": ["California", "Texas", "New York"],
+    ...     "Number": [100, 200, 300]
+    ... })
+    >>> plot_map(df, "California")
+    """
     df_receiving_states = df.set_index('Region and country of birth')
 
     us_states = gpd.read_file('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json')
@@ -198,6 +247,16 @@ def receiving_states_job_title(df, state_short, state, regions, title):
     :param state_short: The short name of the state.
     :param state: The full name of the state.
     :param regions: The list of regions to plot.
-    :param title: The title of the plot."""
+    :param title: The title of the plot.
+    >>> import pandas as pd
+    >>> df = pd.DataFrame({
+    ...     "worksite state": ["CA", "TX", "NY"],
+    ...     "birth country": ["China", "India", "Mexico"],
+    ...     "job title": ["Software Engineer", "Data Scientist", "Web Developer"]
+    ... })
+    >>> receiving_states_job_title(df, "CA", "California", ["China"], "Chinese")"""
     df[((df["worksite state"] == state_short) | (df["worksite state"] == state)) & (df["birth country"].isin(regions))].groupby("job title").size().sort_values(ascending=False).head(10).plot(kind="barh", title=f"Top 10 Job Titles for {title} Immigrants in {state}")
     plt.show()
+
+if __name__ == "__main__":
+    doctest.testmod()
