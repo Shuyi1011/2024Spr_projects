@@ -11,6 +11,7 @@ import doctest
 def get_all_file_paths(directory):
     """Get all csv file paths in a directory.
     :param directory: The directory to search for files.
+    :return: A list of file paths.
     >>> get_all_file_paths("data")
     ['data/random_data_1.csv', 'data/random_data_2.csv']"""
     all_files = os.listdir(directory)
@@ -22,6 +23,7 @@ def check_columns(file_path, required_columns):
     """Check if a file contains the required columns.
     :param file_path: The file path to check.
     :param required_columns: A list of required columns.
+    :return: The file path if it contains the required columns, otherwise None.
     >>> check_columns("data/random_data_1.csv", ["A", "B"])
     'data/random_data_1.csv'
     >>> check_columns("data/random_data_2.csv", ["D", "E"])
@@ -37,6 +39,7 @@ def get_perm_data_path(file_paths, required_columns):
     """Get the file paths that contain the required columns.
     :param file_paths: A list of file paths to check.
     :param required_columns: A list of required columns.
+    :return: A list of qualified file paths.
     >>> file_path = get_all_file_paths("data")
     >>> get_perm_data_path(file_path, "A")
     ['data/random_data_1.csv', 'data/random_data_2.csv']
@@ -55,6 +58,7 @@ def read_perm_data(qualified_files, required_columns, new_columns = {}):
     :param qualified_files: A list of qualified file paths.
     :param required_columns: A list of required columns.
     :param new_columns: A dictionary of new column names.
+    :return: A data frame of the PERM data.
     """
     df_perm = pd.DataFrame()
     for file in qualified_files:
@@ -71,6 +75,49 @@ def read_perm_data(qualified_files, required_columns, new_columns = {}):
             # Handle the exception
             print(f"ValueError occurred while processing file: {file}")
     return df_perm
+
+def calculate_wage_stat(data, country):
+    """ Calculate the wage statistics for a given country
+    :param country: str, the country to calculate the wage statistics for
+    :return: Series, the wage statistics for the given country
+    >>> import pandas as pd
+    >>> data = pd.DataFrame({
+    ...     'birth country': ['USA', 'USA', 'CHINA', 'CHINA'],
+    ...     'Year': [2000, 2001, 2000, 2001],
+    ...     'wage': ['1000', '2000', '3000', '4000']
+    ... })
+    >>> calculate_wage_stat(data, 'USA') # doctest: +ELLIPSIS
+    This is wage statistics for country: USA
+    Year: 2000
+    count     1.0
+    mean     1000.0
+    std        NaN
+    min      1000.0
+    25%      1000.0
+    50%      1000.0
+    75%      1000.0
+    max      1000.0
+    Name: wage, dtype: float64
+    ______________________________________________
+    Year: 2001
+    count     1.0
+    mean     2000.0
+    std        NaN
+    min      2000.0
+    25%      2000.0
+    50%      2000.0
+    75%      2000.0
+    max      2000.0
+    Name: wage, dtype: float64
+    ______________________________________________
+    """
+    data["wage"] = pd.to_numeric(data["wage"], errors='coerce')
+    country_data = data[data["birth country"] == country]
+    print(f"This is wage statistics for country: {country}")
+    for year, group in country_data.groupby('Year'):
+        print(f"Year: {year}")
+        print(group["wage"].describe())
+        print("______________________________________________")
 
 # Data visualization tools
 def plot_immigration_over_time(data, regions, mutiple=True):
@@ -256,6 +303,14 @@ def receiving_states_job_title(df, state_short, state, regions, title):
     >>> receiving_states_job_title(df, "CA", "California", ["China"], "Chinese")"""
     df[((df["worksite state"] == state_short) | (df["worksite state"] == state)) & (df["birth country"].isin(regions))].groupby("job title").size().sort_values(ascending=False).head(10).plot(kind="barh", title=f"Top 10 Job Titles for {title} Immigrants in {state}")
     plt.show()
+
+def plot_top_job_titles_wage_not_null(df, country, top_n=10):
+    """ Plot the top job titles for the given country with wage not null.
+    :param df: The data frame of the job titles.
+    :param country: The country to plot.
+    :param top_n: The number of top job titles to plot. Default is 10."""
+    df[(df["birth country"] == country) & (df["wage"].notna())].groupby("job title").size().sort_values(ascending=False).head(top_n).plot(kind='barh')
+    plt.title(f"Top {top_n} Job Titles for {country} (Wage Not Null)")
 
 if __name__ == "__main__":
     doctest.testmod()
