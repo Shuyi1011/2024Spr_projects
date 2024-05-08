@@ -2,6 +2,9 @@
 ![image](https://github.com/Shuyi1011/2024Spr_projects/assets/134218464/c56d2aca-e12a-4aa8-bf38-a42538498fd1)
 
 ## Data Resource
+### Data folder on Github
+It's NOT the data that I'm using to analyze. It's used ONLY for doctest!!!
+
 ### PERM Data
 This is the official website that provides greencard data from 1820-2023: https://www.dhs.gov/ohss/topics/immigration/yearbook/2022#test
 

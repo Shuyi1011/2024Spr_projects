@@ -89,9 +89,9 @@ def calculate_wage_stat(data, country):
     >>> calculate_wage_stat(data, 'USA') # doctest: +ELLIPSIS
     This is wage statistics for country: USA
     Year: 2000
-    count     1.0
+    count       1.0
     mean     1000.0
-    std        NaN
+    std         NaN
     min      1000.0
     25%      1000.0
     50%      1000.0
@@ -100,9 +100,9 @@ def calculate_wage_stat(data, country):
     Name: wage, dtype: float64
     ______________________________________________
     Year: 2001
-    count     1.0
+    count       1.0
     mean     2000.0
-    std        NaN
+    std         NaN
     min      2000.0
     25%      2000.0
     50%      2000.0
