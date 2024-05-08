@@ -5,12 +5,12 @@
 ### Data folder on Github
 It's NOT the data that I'm using to analyze. It's used ONLY for doctest!!!
 
-### PERM Data
-* data from 1820-2023
+### Data from 1820-2023
 This is the official website that provides greencard data from 1820-2023: https://www.dhs.gov/ohss/topics/immigration/yearbook/2022#test
+
 I upload this to google drive link1: https://docs.google.com/spreadsheets/d/1SIk0FxaTAh3KJXnbInocN_SXfpdcxFPs/edit?usp=sharing&ouid=108691628548360077963&rtpof=true&sd=true
 
-* PERM data
+### PERM Data
 This is the official website that provides original PERM data: https://www.dol.gov/agencies/eta/foreign-labor/performance
 
 I export them as csv documents, which can be read faster in python. I upload them into google drive link2: https://drive.google.com/drive/folders/17CmdnmZGGA9ioVx_8x7-Wx-iq7bTN0Jg?usp=sharing
