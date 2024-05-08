@@ -105,7 +105,6 @@ def plot_immigration_over_time(data, regions, mutiple=True):
     # Display the plot
     plt.show()
 
-
 def plot_states_bar(data, regions):
     """ Plot the number of immigrants for the given regions.
     :param data: The data of immigration numbers.
