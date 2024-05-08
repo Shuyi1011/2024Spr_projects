@@ -12,6 +12,7 @@ I export them as csv documents, which can be read faster in python. I upload the
 I combine all PERM data into one csv file, and only keep the necessary columns. Here is the link: https://drive.google.com/file/d/1V2ajnRIXJGRfK8GvMB6tHfV6rgKgqPFR/view?usp=sharing 
 
 ### How to use the code
+The data files are huge, I cannot push them to github. Sorry for the inconvience.
 You can skip the PERM data process, use the second google drive link to download the csv file which contains all PERM data with necessary columns. Remember to change the path name before you run the code.
 
 ## Reports
