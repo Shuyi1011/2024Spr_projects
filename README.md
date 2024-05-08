@@ -22,5 +22,5 @@ The data files are huge, I cannot push them to github. Sorry for the inconvience
 You can skip the PERM data process, use the third google drive link to download the csv file which contains all PERM data with necessary columns. Remember to change the path name before you run the code.
 
 ## Reports
-(still working on it ^_^)
+(Still working on it ^_^)
 I'm writing a report about data analysis results: https://docs.google.com/document/d/1blIcICMFL6RSPkP97CdUQTYpVWVAXpJMSojWlr5yms8/edit?usp=sharing
